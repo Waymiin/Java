@@ -1,0 +1,157 @@
+package apr24java.project;
+import java.util.*;
+public class Main {
+   
+    private static Product[] products = {
+        new Product("P001", "Honor X5", 3500.00, "Phone"),
+        new Product("P002", "Iphone XVI", 5900.00, "Phone"),
+        new Product("P003", "Samsung Galaxy S9", 3599.00, "Phone"),
+        new Product("P004", "Vivo V9", 1999.00, "Phone"),
+        new Product("P005", "Samsung Galaxy Ultra", 3999.00, "Phone"),
+        new Product("P006", "Razer V3", 199.00, "Mouse"),
+        new Product("P007", "Logitech M240", 99.00, "Mouse"),
+        new Product("P008", "Razer V2 Pro", 179.00, "Mouse"),
+        new Product("P009", "Pulsar X2V2", 59.00, "Mouse"),
+        new Product("P010", "Fantech Aria XD7", 129.00, "Mouse"),
+        new Product("P011", "HP Victus", 3999.00, "Laptop"),
+        new Product("P012", "Asus Vivobook", 2999.00, "Laptop"),
+        new Product("P013", "MSI", 1899.00, "Laptop"),
+        new Product("P014", "Macbook", 4999.00, "Laptop"),
+        new Product("P015", "Dell", 999.00, "Laptop"),
+        new Product("P016", "Asus ROG Claymore", 959.00, "Keyboard"),
+        new Product("P017", "Razer KBoard", 499.00, "Keyboard"),
+        new Product("P018", "Montech Keyboard", 355.00, "Keyboard"),
+        new Product("P019", "Royal KLUDGE Kboard", 250.00, "Keyboard"),
+        new Product("P020", "Logitech MX Keys", 699.00, "Keyboard"),
+        new Product("P021", "Armaggeddon Headset", 299.00, "Headset"),
+        new Product("P022", "Logitech H690 Headset", 499.00, "Headset"),
+        new Product("P023", "HP Bluetooth Headset", 399.00, "Headset"),
+        new Product("P024", "JBL Headphones", 188.00, "Headset"),
+        new Product("P025", "Edifier K800 Headset", 89.00, "Headset"),
+    };
+
+    public static void main(String[] args) {
+        try (Scanner scanner = new Scanner(System.in)) {
+            int choice;
+
+            do {
+                System.out.println(); // Add an empty line
+                System.out.println("Menu selection:");
+                System.out.println("1. Add Product");
+                System.out.println("2. Search Product");
+                System.out.println("3. List Product");
+                System.out.print("Enter selection (1/2/3) 0 to exit: ");
+                choice = scanner.nextInt();
+
+                switch (choice) {
+                    case 1 -> addProduct(scanner);
+                    case 2 -> searchProduct(scanner);
+                    case 3 -> listProducts();
+                    case 0 -> System.out.println("Thank you for using the system.");
+                    default -> System.out.println("Invalid choice. Please try again.");
+                }
+            } while (choice != 0);
+        }
+    }
+
+    private static void addProduct(Scanner scanner) {
+        scanner.nextLine(); // Consume newline
+        System.out.print("Enter the product Id to add: ");
+        String id = scanner.nextLine();
+        System.out.print("Enter the product name: ");
+        String name = scanner.nextLine();
+        System.out.println("Product category:");
+        System.out.println("1. Laptop");
+        System.out.println("2. Phone");
+        System.out.println("3. Headset");
+        System.out.println("4. Mouse");
+        System.out.println("5. Keyboard");
+        System.out.print("Enter the product category number: ");
+        int categoryNum = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        String category;
+        switch (categoryNum) {
+            case 1 -> category = "Laptop";
+            case 2 -> category = "Phone";
+            case 3 -> category = "Headset";
+            case 4 -> category = "Mouse";
+            case 5 -> category = "Keyboard";
+            default -> {
+                System.out.println("Invalid category. Product not added.");
+                return;
+            }
+        }
+
+        System.out.print("Enter the product price in RM: ");
+        double price = scanner.nextDouble();
+        scanner.nextLine(); // Consume newline
+
+        Product newProduct = new Product(id, name, price, category);
+        Product[] newProducts = new Product[products.length + 1];
+        System.arraycopy(products, 0, newProducts, 0, products.length);
+        newProducts[products.length] = newProduct;
+        products = newProducts;
+
+        System.out.println("Product added successfully.");
+    }
+
+    private static void searchProduct(Scanner scanner) {
+        scanner.nextLine(); // Consume newline
+        System.out.println("Search by:");
+        System.out.println("1. Id");
+        System.out.println("2. Name");
+        System.out.println("3. Category");
+        System.out.print("Enter your search selection (1/2/3): ");
+        int searchChoice = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        switch (searchChoice) {
+            case 1 -> {
+                System.out.print("Enter the product Id to search: ");
+                String idSearch = scanner.nextLine();
+                displaySearchResults(products, product -> product.getId().equalsIgnoreCase(idSearch));
+            }
+            case 2 -> {
+                System.out.print("Enter the product name to search: ");
+                String nameSearch = scanner.nextLine();
+                displaySearchResults(products, product -> product.getName().toLowerCase().contains(nameSearch.toLowerCase()));
+            }
+            case 3 -> {
+                System.out.print("Enter the product category to search: ");
+                String categorySearch = scanner.nextLine();
+                displaySearchResults(products, product -> product.getCategory().equalsIgnoreCase(categorySearch));
+            }
+            default -> System.out.println("Invalid search selection.");
+        }
+    }
+
+    private static void listProducts() {
+        System.out.printf("%-5s%-10s%-25s%-15s%10s%n", "No", "Id", "Name", "Category", "Price");
+        System.out.println("=====================================================================");
+        int count = 1;
+        for (Product product : products) {
+            System.out.printf("%-5d%s%n", count++, product.toString());
+        }
+        System.out.println("=====================================================================");
+    }
+
+    private static void displaySearchResults(Product[] products, java.util.function.Predicate<Product> predicate) {
+        System.out.printf("%-5s%-10s%-25s%-15s%10s%n", "No", "Id", "Name", "Category", "Price");
+        System.out.println("=====================================================================");
+        int count = 1;
+        for (Product product : products) {
+            if (predicate.test(product)) {
+                System.out.printf("%-5d%s%n", count++, product.toString());
+            }
+        }
+        System.out.println("=====================================================================");
+    }
+
+    private static void displayProduct(Product product) {
+        System.out.printf("%-10s%-20s%-20s%10s%n", "Id", "Name", "Category", "Price");
+        System.out.println("=====================================================================");
+        System.out.printf("%-10s%-20s%-20s%10.2f%n", product.getId(), product.getName(), product.getCategory(), product.getPrice());
+        System.out.println("=====================================================================");
+    }
+}
